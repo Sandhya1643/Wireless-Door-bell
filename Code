@@ -1,0 +1,62 @@
+ Doorbell Transmitter Code
+ // ask_transmitter.pde
+ // -*- mode: C++ -*
+// Simple example of how to use RadioHead to transmit messages
+ // with a simple ASK transmitter in a very simple way.
+ // Implements a simplex (one-way) transmitter with an TX-C1 module
+ #include <RH_ASK.h>
+ #include <SPI.h> // Not actually used but needed to compile
+ RH_ASK driver;
+ // RH_ASK driver(2000, 2, 4, 5); // ESP8266 or ESP32: do not use pin 11
+ void setup()
+ {
+    Serial.begin(9600);   // Debugging only
+    pinMode(5,INPUT);
+    if (!driver.init())
+         Serial.println("init failed");
+ }
+ void loop()
+ {
+    if(digitalRead(5)==HIGH){
+    const char *msg = "a";
+    driver.send((uint8_t *)msg, strlen(msg));
+    driver.waitPacketSent();
+    delay(200);
+    }
+ }
+     
+Doorbell Receiver Code
+ #include <RH_ASK.h>
+ #include <SPI.h> // Not actualy used but needed to compile
+ #include "pitches.h" //add Equivalent frequency for musical note
+ #include "themes.h" //add Note vale and duration 
+RH_ASK driver;
+ void setup()
+ {
+    Serial.begin(9600); // Debugging only
+    if (!driver.init())
+         Serial.println("init failed");
+     else
+        Serial.println("done");
+ }
+ void Play_Pirates()
+ { 
+  for (int thisNote = 0; thisNote < (sizeof(Pirates_note)/sizeof(int)); thisNote++) {
+    int noteDuration = 1000 / Pirates_duration[thisNote];//convert duration to time delay
+    tone(8, Pirates_note[thisNote], noteDuration);
+    int pauseBetweenNotes = noteDuration * 1.05; //Here 1.05 is tempo, increase to play it slower
+    delay(pauseBetweenNotes);
+    noTone(8); //stop music on pin 8 
+    }
+ }
+ void loop()
+ {
+    uint8_t buf[1];
+    uint8_t buflen = sizeof(buf);
+    if (driver.recv(buf, &buflen)) // Non-blocking
+    {
+      Serial.println("Selected -> 'He is a Pirate' ");  
+      Play_Pirates();
+      Serial.println("stop");
+  }
+ }
