@@ -1,5 +1,5 @@
 
-                                              Wireless Doorbell using Arduino and RF Module
+                                   Wireless Doorbell using Arduino and RF Module
 Aim:
 To design and implement a wireless doorbell system using Arduino and RF (Radio Frequency) modules, allowing remote activation of the doorbell without the need for wired connections
 
